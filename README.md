@@ -216,3 +216,40 @@ Chapter 20. Client Authentication
 客户端认证由一个配置文件控制pg_hba.conf存储在数据库集群的数据目录中HBA 代表基于主机的认证。
 重新读取该文件
 
+
+III. Server Administration
+Installation from Binaries?
+
+---
+
+
+Chapter 18. Server Setup and Operation
+独立的用户账户postgres
+不应与其他守护进程共用
+
+Creating a Database Cluster
+这个DC一般包含 postgres 和 template1 和 template0这几个数据库。
+在使用DC前可以使用 initdb 程序（注意运行的身份）手动对其进行初始化，一般使用预编译的应该按照文档来。
+
+部署会将DC存放在与机器根卷（root volume）不同的文件系统（卷）上。
+不建议直接将辅助卷最顶层的目录（即挂载点）用作 PostgreSQL 的数据目录。创建一个由 PostgreSQL 用户拥有的目录，然后再在这个目录中创建DC。
+
+Starting the Database Server 参考软件包
+
+Chapter 19. Server Configuration
+如何通过 postgresql.conf 配置参数？  
+如何通过 SQL 设置参数？
+如何通过命令行设置参数？
+如何拆分、组织和管理配置文件？
+
+参数名称均不区分大小写。取值均属于以下五种类型之一：
+布尔型（boolean）、字符串型（string）、整数型（integer）、浮点数型（floating point）或枚举型（enumerated，简称 enum）。
+
+每行指定一个参数。参数名称与参数值之间的等号可以省略。
+每当主服务器进程收到 SIGHUP 信号时，PostgreSQL 就会重新读取配置文件。最简单的发送方式，是在命令行运行 pg_ctl reload，或者调用 SQL 函数 pg_reload_conf()。
+不是简单标识符或数字的参数值，必须使用单引号括起来。
+
+pg_file_settings：查看配置文件当前的内容，并检查这些条目是否可以应用。
+pg_settings：查看 PostgreSQL 当前的运行时参数状态，包括当前值、参数来源，以及修改是否需要
+
+pg_reload_conf() ALTER SYSTEM 命令
