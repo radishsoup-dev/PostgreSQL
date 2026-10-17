@@ -153,3 +153,66 @@ DELETE FROM tablename;
 
 存储和访问数据的基础知识--> SQL 的一些更高级的特性，简化管理并防止数据丢失或损坏-->了解一些 PostgreSQL 扩展。
 
+确保没有人能够向 weather 表中插入在 cities 表中没有匹配项的行。这被称为维护数据的引用完整性。
+CREATE TABLE cities (
+        name     varchar(80) primary key,
+        location point
+);
+
+CREATE TABLE weather (
+        city      varchar(80) references cities(name),
+        temp_lo   int,
+        temp_hi   int,
+        prcp      real,
+        date      date
+);
+INSERT INTO weather VALUES ('Berkeley', 45, 53, 0.0, '1994-11-28');
+ERROR:  insert or update on table "weather" violates foreign key constraint "weather_city_fkey"
+DETAIL:  Key (city)=(Berkeley) is not present in table "cities".
+
+通过将事务中的 SQL 命令包裹在 BEGIN 和 COMMIT 命令中
+BEGIN;
+UPDATE accounts SET balance = balance - 100.00
+    WHERE name = 'Alice';
+-- etc etc
+COMMIT;
+ROLLBACK 
+
+使用 SAVEPOINT 定义保存点后，如果需要，你可以使用 ROLLBACK TO 回滚到该保存点。
+
+无论是释放还是回滚到某个保存点，都会自动释放在该保存点之后定义的所有保存点。
+BEGIN;
+UPDATE accounts SET balance = balance - 100.00
+    WHERE name = 'Alice';
+SAVEPOINT my_savepoint;
+UPDATE accounts SET balance = balance + 100.00
+    WHERE name = 'Bob';
+-- oops ... forget that and use Wally's account
+ROLLBACK TO my_savepoint;
+UPDATE accounts SET balance = balance + 100.00
+    WHERE name = 'Wally';
+COMMIT;
+
+ROLLBACK TO 是重新获得事务块控制权的唯一方法，该事务块因错误或系统原因进入中止状态，除了完全回滚并重新开始之外。
+
+Window Functions
+Inheritance
+
+Part III. Server Administration
+安装、配置、用户和数据库管理以及维护任务。
+
+18
+如何设置和运行数据库服务器，以及它与操作系统的交互。
+
+在执行任何操作之前，先在磁盘上初始化一个数据库集簇。（SQL标准使用的术语是目录集簇。）
+数据库集簇将包含一个名为postgres的数据库，该数据库旨在作为工具、用户和第三方应用程序使用的默认数据库。
+每个集簇中还会创建另外两个数据库，分别名为template1和template0。顾名思义，它们将用作后续创建数据库的模板。
+
+使用 initdb 对其进行初始化。
+
+
+Chapter 20. Client Authentication
+根据（客户端）主机地址、数据库和用户来选择，
+客户端认证由一个配置文件控制pg_hba.conf存储在数据库集群的数据目录中HBA 代表基于主机的认证。
+重新读取该文件
+
