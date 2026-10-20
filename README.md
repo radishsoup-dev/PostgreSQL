@@ -253,3 +253,16 @@ pg_file_settings：查看配置文件当前的内容，并检查这些条目是�
 pg_settings：查看 PostgreSQL 当前的运行时参数状态，包括当前值、参数来源，以及修改是否需要
 
 pg_reload_conf() ALTER SYSTEM 命令
+
+SHOW config_file;
+SHOW hba_file;
+SHOW listen_addresses;
+SHOW port;
+
+例如listen_addresses = 'localhost,192.168.1.10'
+
+ALTER ROLE navicat_user
+    WITH LOGIN PASSWORD '替换为强密码';
+ALTER USER postgres WITH PASSWORD '替换为你的新强密码';
+
+\password postgres
